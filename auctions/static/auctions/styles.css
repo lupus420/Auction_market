@@ -1,0 +1,15 @@
+body {
+    padding: 10px;
+}
+
+#listing_description_text{
+    height:135px;
+}
+
+.no-margin-label{
+    margin:0
+}
+
+#white{
+    color: white;
+}

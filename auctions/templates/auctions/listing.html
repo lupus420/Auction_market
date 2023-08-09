@@ -1,0 +1,34 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <h2>{{listing.title}}</h2>
+                    <b>Price:</b>  {{listing.bids.all.last.price}} $ <i>(last bid by {{listing.bids.all.last.user}})</i><br>
+                    <b>Description:</b> {{listing.description}} <br>
+                    <b>Listing added by:</b> {{listing.user}}<br>
+                </div>
+                <div class="mb-3">
+                    <a class="btn btn-primary" href="{% url 'add_to_watchlist' listing.id %}">Add to watchlist</a>
+                    <a class="btn btn-secondary" href="{% url 'delete_listing' listing.id %}">Delete listing</a>
+                </div>
+                <div class="container row">
+                    <form action="{% url 'bid_listing' listing.id %}" class="form" method="post">
+                        {% csrf_token %}
+                        {{form.bid_amount}}
+                        <input type="submit" class="btn btn-primary" value="Bid">
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <img src="{{listing.image.url}}" alt="{{listing}}" class="img-fluid rounded">
+            </div>
+            {% comment %}     
+            Add condition - if logged in user match 
+            the user that added the listing -> can delete listing
+            {% endcomment %}
+        </div>
+    </div>
+{% endblock body %}

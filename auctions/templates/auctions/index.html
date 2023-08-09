@@ -1,0 +1,38 @@
+{% extends 'auctions/layout.html' %}
+{% load static %}
+{% block body %}
+<div class="container">
+    <h2>Active listings</h2>
+    {% for listing in listings %}
+    <article>
+    <a href="{% url 'listing_id' listing.id %}" class="text-decoration-none">
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <img src="{{listing.image.url}}" alt="{{listing}}" class="img-fluid rounded object-fit-contain">
+            </div>
+            <div class="col-md-6 d-flex flex-column">
+                <div class="row container">
+                    <h3>{{listing.title}}</h3>
+                    {% if user in listing.watch_list.all %}
+                        <div id="white" class="ml-auto mb-auto badge bg-secondary">
+                            watchlist
+                        </div>
+                    {% endif %}
+                </div>
+                <h5>Price: {{listing.bids.all.last.price}} $</h5>
+                <!-- mt-auto is margin-top: auto -->
+                <div class="mt-auto row container">
+                    <div><i>Added by: {{listing.user}}</i></div>
+                    <div class="ml-auto"><i>{{listing.date_time}}</i></div>
+                </div>
+            </div>
+        </div>
+    </a>
+    </article>
+    <hr>
+    {%empty%} 
+    There are no listings at the moment. Add one <a href="{% url 'new_listing' %}">here</a>
+    {% endfor %}
+
+</div>
+{% endblock body %}
