@@ -14,7 +14,8 @@ urlpatterns = [
     path("error", views.error, name="error"),
     path("delete/<int:listing_id>", views.delete, name="delete_listing"),
     path("watchlist", views.watchlist, name="watchlist"),
-    path("watchlist/add/<int:listing_id>", views.add_to_watchlist, name="add_to_watchlist")
+    path("watchlist/add/<int:listing_id>", views.add_to_watchlist, name="add_to_watchlist"),
+    path("listing", views.show_listing_JSON, name="part_listing")
 ]
 
 if settings.DEBUG:

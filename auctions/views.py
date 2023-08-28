@@ -1,10 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django import forms
 from django.db import IntegrityError, OperationalError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from .models import User, AuctionCategory, AuctionBid, AuctionListing, AuctionComment
+from django.core import serializers
+
+import json
 
 # Evaluate if the user is logged in with the @login_required decorator
 from django.contrib.auth.decorators import login_required
@@ -229,3 +232,31 @@ def add_to_watchlist(request, listing_id):
         return render(request, "auctions/error.html",{
             "information": "Cannot add not exisiting item to watchlist"
         })
+
+def show_listing_JSON(request):
+    start = int(request.GET.get('start', 0))
+    end = int(request.GET.get('end', 3))
+
+    user_info = request.user
+    if user_info.is_authenticated:
+        user_id = int(user_info.id)
+    else:
+        user_id = None
+    
+    listings_part = AuctionListing.objects.all()[start:end]
+        
+    # Serialize the QuerySet to JSON
+    listings_part_json = serializers.serialize('json', listings_part)
+
+    # Convert JSON to python dictionary
+    listings_part_dict = json.loads(listings_part_json)
+    
+    # There is no direct info about 'price' in AuctionListing JSON
+    # So the price infomation has to be added
+    for listing_json in listings_part_dict:
+        curr_listing = AuctionListing.objects.get(pk=listing_json["pk"])
+        listing_json["fields"]["price"] = curr_listing.bids.all().last().price
+        listing_json["fields"]["creator_name"] = curr_listing.user.username
+        listing_json["logged_user"] = user_id
+        
+    return JsonResponse(listings_part_dict, safe=False)
